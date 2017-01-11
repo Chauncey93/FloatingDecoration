@@ -15,7 +15,7 @@ import android.support.v7.widget.RecyclerView;
 import android.text.TextPaint;
 import android.view.View;
 
-import com.chauncey.decoration.R;
+
 
 /**
  * Created by Chauncey on 2017/1/4 .
