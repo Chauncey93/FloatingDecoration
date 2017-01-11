@@ -121,6 +121,13 @@ public class FloatingDecoration extends RecyclerView.ItemDecoration {
             int bottom = top + mDividingLine.getIntrinsicHeight();
             mDividingLine.setBounds(left, top, right, bottom);
             mDividingLine.draw(canvas);
+            int position = parent.getChildAdapterPosition(view);
+            if (isFirstInGroup(position)) {
+                top = view.getTop();
+                bottom = top + mDividingLine.getIntrinsicHeight();
+                mDividingLine.setBounds(left, top, right, bottom);
+                mDividingLine.draw(canvas);
+            }
         }
     }
 
@@ -133,7 +140,12 @@ public class FloatingDecoration extends RecyclerView.ItemDecoration {
                 if (groupLabel == null) return;
                 int bottom = view.getTop();
                 int top = bottom - mLabelHeight;
-                canvas.drawRect(left, top, right, bottom, mPaint);
+                if(mDividingLine == null)
+                {
+                    canvas.drawRect(left, top , right, bottom, mPaint);
+                }else {
+                    canvas.drawRect(left, top + mDividingLine.getIntrinsicHeight() , right, bottom, mPaint);
+                }
                 canvas.drawText(groupLabel, left + 30, bottom - mLabelHeight / 2 + (float) getLabelHeight() / 4, mTextPaint);
             }
         }
@@ -153,12 +165,20 @@ public class FloatingDecoration extends RecyclerView.ItemDecoration {
                 int bottom = child.getBottom();
                 if (bottom <= mLabelHeight) {
                     canvas.drawRect(left, 0, right, bottom, mPaint);
+                    if (mDividingLine != null) {
+                        mDividingLine.setBounds(left, bottom , right, bottom + mDividingLine.getIntrinsicHeight());
+                        mDividingLine.draw(canvas);
+                    }
                     canvas.drawText(label, 30, mLabelHeight / 2 + (float) getLabelHeight() / 4 - (mLabelHeight - bottom), mTextPaint);
                     return;
                 }
             }
         }
         canvas.drawRect(left, 0, right, mLabelHeight, mPaint);
+        if (mDividingLine != null) {
+            mDividingLine.setBounds(left, mLabelHeight, right, mLabelHeight + mDividingLine.getIntrinsicHeight());
+            mDividingLine.draw(canvas);
+        }
         canvas.drawText(label, 30, mLabelHeight / 2 + (float) getLabelHeight() / 4, mTextPaint);
     }
 

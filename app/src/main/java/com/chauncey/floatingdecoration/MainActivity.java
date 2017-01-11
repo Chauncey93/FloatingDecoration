@@ -13,9 +13,10 @@ import android.view.ViewGroup;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity implements FloatingDecoration.DecorationCallback {
+public class MainActivity extends AppCompatActivity {
     private List<Item> items;
-   private Drawable mDividingLine;
+    private Drawable mDividingLine;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -24,21 +25,6 @@ public class MainActivity extends AppCompatActivity implements FloatingDecoratio
 
     private void init() {
         items = new ArrayList<>();
-        RecyclerView recyclerView = new RecyclerView(this);
-        RecyclerView.LayoutParams lp =
-                new RecyclerView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
-        recyclerView.setLayoutParams(lp);
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        FloatingDecoration decoration = new FloatingDecoration(this, this);
-        recyclerView.addItemDecoration(decoration);
-
-        int[] attr = new int[]{android.support.v7.appcompat.R.attr.dividerHorizontal};
-        TypedArray array = this.obtainStyledAttributes(attr);
-        mDividingLine = array.getDrawable(0);
-        array.recycle();
-
-        decoration.setDividingLine(mDividingLine);
-
         for (int i = 0; i < 6; i++) {
             Item item = new Item();
             item.setName("Item" + i);
@@ -63,13 +49,31 @@ public class MainActivity extends AppCompatActivity implements FloatingDecoratio
             item.setTitle("Group 4");
             items.add(item);
         }
+        RecyclerView recyclerView = new RecyclerView(this);
+        RecyclerView.LayoutParams lp =
+                new RecyclerView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+        recyclerView.setLayoutParams(lp);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+
+        FloatingDecoration decoration = new FloatingDecoration(this, new FloatingDecoration.DecorationCallback() {
+            @Override
+            public String getGroupLabel(int position) {
+                return items.get(position).getTitle();
+            }
+        });
+
+        recyclerView.addItemDecoration(decoration);
+
+        int[] attr = new int[]{android.support.v7.appcompat.R.attr.dividerHorizontal};
+        TypedArray array = this.obtainStyledAttributes(attr);
+        mDividingLine = array.getDrawable(0);
+        array.recycle();
+
+        decoration.setDividingLine(mDividingLine);
+
 
         recyclerView.setAdapter(new Adapter(this, items));
         setContentView(recyclerView);
     }
 
-    @Override
-    public String getGroupLabel(int position) {
-        return items.get(position).getTitle();
-    }
 }
